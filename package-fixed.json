@@ -1,0 +1,75 @@
+{
+  "name": "vulnerable-npm-demo",
+  "version": "1.0.0",
+  "description": "Demo Node.js/Express app — REMEDIATED. All CVEs resolved by version bumps only.",
+  "main": "src/index.js",
+  "scripts": {
+    "start":        "node src/index.js",
+    "dev":          "nodemon src/index.js",
+    "test":         "jest --runInBand",
+    "audit:scan":   "npm audit --json > reports/npm-audit-vulnerable.json || true",
+    "audit:fix":    "cp package-fixed.json package.json && npm install",
+    "audit:rescan": "npm audit --json > reports/npm-audit-fixed.json || true",
+    "lint":         "eslint src/ --ext .js",
+    "demo":         "bash scripts/run-demo.sh"
+  },
+  "keywords": ["security", "cve", "fixed", "demo", "devsecops"],
+  "author": "Demo",
+  "license": "MIT",
+
+  "dependencies": {
+    "express":              "4.18.2",
+    "axios":                "1.6.0",
+    "lodash":               "4.17.21",
+    "moment":               "2.29.4",
+    "jsonwebtoken":         "9.0.0",
+    "json5":                "2.2.2",
+    "xml2js":               "0.5.0",
+    "marked":               "4.0.10",
+    "node-fetch":           "2.6.7",
+    "tough-cookie":         "4.1.3",
+    "follow-redirects":     "1.15.4",
+    "qs":                   "6.11.0",
+    "body-parser":          "1.20.2",
+    "cors":                 "2.8.5",
+    "helmet":               "7.1.0",
+    "dotenv":               "16.0.3",
+    "uuid":                 "9.0.0",
+    "bcryptjs":             "2.4.3"
+  },
+
+  "devDependencies": {
+    "jest":                 "29.0.0",
+    "supertest":            "6.3.3",
+    "nodemon":              "3.0.1",
+    "eslint":               "8.57.0",
+    "minimist":             "1.2.6",
+    "semver":               "7.5.2",
+    "word-wrap":            "1.2.4",
+    "terser":               "5.14.2",
+    "minimatch":            "3.0.5",
+    "glob-parent":          "5.1.2",
+    "ansi-regex":           "5.0.1",
+    "http-cache-semantics": "4.1.1",
+    "decode-uri-component": "0.2.1",
+    "json-schema":          "0.4.0"
+  },
+
+  "overrides": {
+    "qs":                   "6.11.0",
+    "json5":                "2.2.2",
+    "minimist":             "1.2.6",
+    "ansi-regex":           "5.0.1",
+    "glob-parent":          "5.1.2",
+    "semver":               "7.5.2",
+    "word-wrap":            "1.2.4",
+    "terser":               "5.14.2",
+    "minimatch":            "3.0.5",
+    "decode-uri-component": "0.2.1",
+    "http-cache-semantics": "4.1.1",
+    "tough-cookie":         "4.1.3",
+    "follow-redirects":     "1.15.4",
+    "xml2js":               "0.5.0",
+    "json-schema":          "0.4.0"
+  }
+}

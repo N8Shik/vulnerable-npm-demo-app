@@ -1,0 +1,57 @@
+{
+  "name": "vulnerable-npm-demo",
+  "version": "1.0.0",
+  "description": "Demo Node.js/Express app with intentionally vulnerable npm dependencies for CVE scanning demos. DO NOT USE IN PRODUCTION.",
+  "main": "src/index.js",
+  "scripts": {
+    "start":        "node src/index.js",
+    "dev":          "nodemon src/index.js",
+    "test":         "jest --runInBand",
+    "audit:scan":   "npm audit --json > reports/npm-audit-vulnerable.json || true",
+    "audit:fix":    "cp package-fixed.json package.json && npm install",
+    "audit:rescan": "npm audit --json > reports/npm-audit-fixed.json || true",
+    "lint":         "eslint src/ --ext .js",
+    "demo":         "bash scripts/run-demo.sh"
+  },
+  "keywords": ["security", "cve", "vulnerable", "demo", "devsecops"],
+  "author": "Demo",
+  "license": "MIT",
+
+  "dependencies": {
+    "express":              "4.17.3",
+    "axios":                "1.5.1",
+    "lodash":               "4.17.20",
+    "moment":               "2.29.1",
+    "jsonwebtoken":         "8.5.1",
+    "json5":                "2.2.0",
+    "xml2js":               "0.4.23",
+    "marked":               "4.0.9",
+    "node-fetch":           "2.6.5",
+    "tough-cookie":         "4.1.2",
+    "follow-redirects":     "1.14.9",
+    "qs":                   "6.10.2",
+    "body-parser":          "1.19.2",
+    "cors":                 "2.8.5",
+    "helmet":               "5.0.2",
+    "dotenv":               "16.0.3",
+    "uuid":                 "9.0.0",
+    "bcryptjs":             "2.4.3"
+  },
+
+  "devDependencies": {
+    "jest":                 "29.0.0",
+    "supertest":            "6.3.3",
+    "nodemon":              "3.0.1",
+    "eslint":               "8.57.0",
+    "minimist":             "1.2.5",
+    "semver":               "7.3.8",
+    "word-wrap":            "1.2.3",
+    "terser":               "5.12.1",
+    "minimatch":            "3.0.4",
+    "glob-parent":          "5.1.1",
+    "ansi-regex":           "5.0.0",
+    "http-cache-semantics": "4.1.0",
+    "decode-uri-component": "0.2.0",
+    "json-schema":          "0.2.3"
+  }
+}

@@ -1,0 +1,147 @@
+name: CI — Build, Test & Security Scan
+
+on:
+  push:
+    branches: ["main", "develop"]
+  pull_request:
+    branches: ["main"]
+  schedule:
+    - cron: "0 8 * * 1"   # Every Monday 08:00 UTC
+
+jobs:
+  # ──────────────────────────────────────────────────────────────
+  # JOB 1: Install & Unit Test
+  # ──────────────────────────────────────────────────────────────
+  build-and-test:
+    name: Build & Test (Vulnerable State)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Run tests
+        run: npm test
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: reports/
+
+  # ──────────────────────────────────────────────────────────────
+  # JOB 2: npm audit — shows CVEs in vulnerable state
+  # ──────────────────────────────────────────────────────────────
+  npm-audit-vulnerable:
+    name: npm audit (Vulnerable State)
+    runs-on: ubuntu-latest
+    needs: build-and-test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: npm
+
+      - name: Install vulnerable dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Run npm audit (expected to FAIL — vulnerable state)
+        run: |
+          mkdir -p reports
+          echo "=== npm audit (VULNERABLE) ==="
+          npm audit --json > reports/npm-audit-vulnerable.json || true
+          npm audit || true
+
+      - name: Upload vulnerable audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-audit-vulnerable
+          path: reports/npm-audit-vulnerable.json
+
+  # ──────────────────────────────────────────────────────────────
+  # JOB 3: Snyk scan (optional — requires SNYK_TOKEN secret)
+  # ──────────────────────────────────────────────────────────────
+  snyk-scan:
+    name: Snyk Dependency Scan
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    continue-on-error: true   # Don't block if SNYK_TOKEN not set
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Install Snyk
+        run: npm install -g snyk
+
+      - name: Authenticate Snyk
+        run: snyk auth ${{ secrets.SNYK_TOKEN }}
+        continue-on-error: true
+
+      - name: Run Snyk test
+        run: snyk test --severity-threshold=high --json > reports/snyk-report.json || true
+        continue-on-error: true
+
+      - name: Upload Snyk report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: snyk-report
+          path: reports/snyk-report.json
+
+  # ──────────────────────────────────────────────────────────────
+  # JOB 4: Apply fixes and re-scan — must PASS at high threshold
+  # ──────────────────────────────────────────────────────────────
+  verify-remediation:
+    name: Verify Remediation (Fixed Versions)
+    runs-on: ubuntu-latest
+    needs: npm-audit-vulnerable
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Apply package-fixed.json
+        run: |
+          echo "=== Applying fixed versions ==="
+          cp package.json package.json.bak
+          cp package-fixed.json package.json
+          echo "--- Diff of changes ---"
+          diff package.json.bak package.json || true
+
+      - name: Install fixed dependencies
+        run: npm install --ignore-scripts
+
+      - name: Run tests with fixed packages (must pass)
+        run: npm test
+
+      - name: npm audit on fixed packages (must pass — no high/critical)
+        run: |
+          mkdir -p reports
+          npm audit --json > reports/npm-audit-fixed.json
+          npm audit --audit-level=high
+
+      - name: Upload fixed audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-audit-fixed
+          path: reports/npm-audit-fixed.json
