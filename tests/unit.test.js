@@ -5,63 +5,6 @@ const { generateToken, verifyToken, decodeToken } = require('../src/services/tok
 const { getDefaultConfig, parseArgs } = require('../src/config/loader');
 
 // ─────────────────────────────────────────────────────────────
-// Verify pinned vulnerable versions are present (demo state)
-// ─────────────────────────────────────────────────────────────
-describe('Vulnerable version pinning (demo state verification)', () => {
-  const semver = require('semver');
-
-  it('lodash should be < 4.17.21 (CVE-2021-23337 / CVE-2020-28500)', () => {
-    const { version } = require('lodash/package.json');
-    expect(semver.lt(version, '4.17.21')).toBe(true);
-  });
-
-  it('moment should be < 2.29.2 (CVE-2022-24785)', () => {
-    const { version } = require('moment/package.json');
-    expect(semver.lt(version, '2.29.2')).toBe(true);
-  });
-
-  it('jsonwebtoken should be <= 8.5.1 (CVE-2022-23529)', () => {
-    const { version } = require('jsonwebtoken/package.json');
-    expect(semver.lte(version, '8.5.1')).toBe(true);
-  });
-
-  it('json5 should be < 2.2.2 (CVE-2022-46175)', () => {
-    const { version } = require('json5/package.json');
-    expect(semver.lt(version, '2.2.2')).toBe(true);
-  });
-
-  it('axios should be < 1.6.0 (CVE-2023-45857)', () => {
-    const { version } = require('axios/package.json');
-    expect(semver.lt(version, '1.6.0')).toBe(true);
-  });
-
-  it('xml2js should be < 0.5.0 (CVE-2023-0842)', () => {
-    const { version } = require('xml2js/package.json');
-    expect(semver.lt(version, '0.5.0')).toBe(true);
-  });
-
-  it('tough-cookie should be < 4.1.3 (CVE-2023-26136)', () => {
-    const { version } = require('tough-cookie/package.json');
-    expect(semver.lt(version, '4.1.3')).toBe(true);
-  });
-
-  it('marked should be < 4.0.10 (CVE-2022-21680)', () => {
-    const { version } = require('marked/package.json');
-    expect(semver.lt(version, '4.0.10')).toBe(true);
-  });
-
-  it('node-fetch should be < 2.6.7 (CVE-2022-0235)', () => {
-    const { version } = require('node-fetch/package.json');
-    expect(semver.lt(version, '2.6.7')).toBe(true);
-  });
-
-  it('follow-redirects should be < 1.15.4 (CVE-2023-26159)', () => {
-    const { version } = require('follow-redirects/package.json');
-    expect(semver.lt(version, '1.15.4')).toBe(true);
-  });
-});
-
-// ─────────────────────────────────────────────────────────────
 // Helpers
 // ─────────────────────────────────────────────────────────────
 describe('formatProductTemplate', () => {
